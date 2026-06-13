@@ -87,3 +87,21 @@ Durante el despliegue real del laboratorio se identificaron problemas de configu
 4. **Corrección de la URL del Webhook (Paso 7):**
    * **Cambio:** Se cambió el host del Contact Point de `http://backend:3001/alerts` a `http://lab-backend:3001/alerts`.
    * **Por qué:** Grafana arrojaba errores de conexión fallida al intentar enviar la alerta. Al cambiarlo por el nombre DNS real del contenedor dentro de la red interna de Docker (`lab-backend`), los servicios se comunicaron con total éxito de forma inmediata.
+
+
+
+Respuesta a las preguntas 
+
+1. ¿Por qué necesitamos Loki además de Prometheus si ya tenemos /metrics?
+Porque ambos se complementan ,Prometheus almacena métricas y nos muestra qué ocurrió y cuándo ocurrió, mientras que Loki almacena logs y permite conocer la causa del problema. 
+Por ejemplo, Prometheus puede mostrar un aumento de CPU y Loki puede indicar el error que lo provocó.
+2. ¿Qué ventaja aporta que las fuentes de datos de Grafana estén aprovisionadas como código y no creadas a mano?
+Una ventaja es que toda la configuración queda automatizada y puede reproducirse fácilmente en cualquier entorno, en caso se necesite volver a levantar el proyecto o migrarlo a otra máquina, las fuentes de datos se configuran automáticamente sin tener que hacerlo manualmente en Grafana.
+Además, al estar guardadas en archivos de configuración, pueden almacenarse en Git para llevar un control de cambios. También se reducen errores de configuración que podrían ocurrir al realizar el proceso manualmente.
+
+3. El panel "CPU contenedor" y el panel "CPU host" pueden mostrar valores muy distintos. ¿Por qué? ¿Cuál usarías para alertar sobre una aplicación concreta?
+Pueden mostrar valores distintos porque la CPU del host mide el consumo total de la máquina, mientras que la CPU del contenedor solo mide el consumo de una aplicación específica. Para alertar sobre una aplicación concreta utilizaría la CPU del contenedor, ya que muestra directamente el comportamiento de esa aplicación y evita alertas causadas por otros procesos del sistema.
+4. ¿Qué diferencia hay entre el evaluation interval y el pending period de una alarma?
+El evaluation interval indica cada cuánto tiempo Grafana revisa si se cumple la condición de la alerta. En esta práctica se configuró cada 10 segundos.
+El pending period indica cuánto tiempo debe mantenerse la condición antes de activar la alerta. En nuestro caso fue de 30 segundos.
+
